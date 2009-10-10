@@ -1,11 +1,15 @@
 package com.notedpath.linode;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -174,6 +178,46 @@ public class Linode {
 		return execute(b.toString());
 	}
 
+	public List<LinodeResponse> batchExecute(List<LinodeRequest> requests) throws IOException, HttpException,
+			JSONException {
+		StringBuilder b = generateURL("batch");
+		JSONArray params = new JSONArray();
+		for (LinodeRequest req : requests) {
+			JSONObject o = new JSONObject();
+			o.put("api_action", req.getAction().getActionName());
+			for (int x = 0; x < req.getParameters().length; x++) {
+				if (x + 1 < req.getParameters().length) {
+					o.put(req.getParameters()[x], (req.getParameters()[x + 1]));
+				} else {
+					o.put(req.getParameters()[x], JSONObject.NULL);
+				}
+				x++;
+			}
+			params.put(o);
+		}
+
+		b = addQueryParameters(b, "api_requestArray", params.toString());
+
+		String url = b.toString();
+
+		GetMethod get = new GetMethod(url);
+		int rcode = client.executeMethod(get);
+		if (rcode != HttpStatus.SC_OK) {
+			throw new HttpException("Non-200 HTTP Status code returned: " + rcode);
+		}
+
+		if (debug) {
+			System.out.println("End point: " + url);
+			System.out.println(get.getResponseBodyAsString());
+		}
+		JSONArray res = new JSONArray(get.getResponseBodyAsString());
+		List<LinodeResponse> responses = new ArrayList<LinodeResponse>();
+		for (int x = 0; x < res.length(); x++) {
+			responses.add(new LinodeResponse(res.getJSONObject(x)));
+		}
+		return responses;
+	}
+
 	/**
 	 * Performs the HTTP get to the specified url and returns the LinodeResponse
 	 * 
@@ -206,13 +250,17 @@ public class Linode {
 	 * @return StringBuilder of URL
 	 */
 	private StringBuilder generateURL(API_ACTION action) {
+		return generateURL(action.getActionName());
+	}
+
+	private StringBuilder generateURL(String action) {
 		StringBuilder b = new StringBuilder(this.apiEndPoint);
 		if (this.apiKey != null) {
 			b.append("?api_key=" + this.apiKey + "&");
 		} else {
 			b.append("?");
 		}
-		b.append("api_action=" + action.toString().toLowerCase().replaceAll("_", "."));
+		b.append("api_action=" + action);
 		return b;
 	}
 
@@ -227,13 +275,23 @@ public class Linode {
 	 */
 	private StringBuilder addQueryParameters(StringBuilder b, String... parameters) {
 		for (int x = 0; x < parameters.length; x++) {
-			b.append("&" + parameters[x] + "=");
+			b.append("&" + encode(parameters[x]) + "=");
 			if (x + 1 < parameters.length) {
-				b.append(parameters[x + 1]);
+				b.append(encode(parameters[x + 1]));
 			}
 			x++;
 		}
 		return b;
+	}
+
+	private String encode(String s) {
+		String str = s;
+		try {
+			str = URLEncoder.encode(s, "UTF-8");
+		} catch (Exception e) {
+			// ignore
+		}
+		return str;
 	}
 
 	/**
