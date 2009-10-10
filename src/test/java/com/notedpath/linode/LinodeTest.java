@@ -9,7 +9,7 @@ public class LinodeTest extends TestCase {
 	private Linode linode;
 
 	public void setUp() throws Exception {
-		
+
 		// Set your API key!!!
 		String API_KEY = "MY_API_KEY";
 		linode = new Linode(API_KEY, true);
@@ -64,6 +64,7 @@ public class LinodeTest extends TestCase {
 		System.out.println("errors: " + o.getErrorArray());
 	}
 
+	@SuppressWarnings("unchecked")
 	public void testBatch() throws Exception {
 		LinodeRequest req1 = new LinodeRequest(API_ACTION.TEST_ECHO, "foo", "bar");
 		LinodeRequest req2 = new LinodeRequest(API_ACTION.TEST_ECHO, "foo", "bar");
@@ -71,11 +72,17 @@ public class LinodeTest extends TestCase {
 		reqs.add(req1);
 		reqs.add(req2);
 
-		List<LinodeResponse> responses = linode.batchExecute(reqs);
-		for (LinodeResponse o : responses) {
-			System.out.println("data: " + o.getData());
-			System.out.println("action: " + o.getAction());
-			System.out.println("errors: " + o.getErrorArray());
+		Object obj = linode.batchExecute(reqs);
+		if (obj instanceof LinodeResponse) {
+			LinodeResponse o = (LinodeResponse) obj;
+		} else if (obj instanceof List<?>) {
+			List<LinodeResponse> responses = (List<LinodeResponse>) obj;
+			for (LinodeResponse o : responses) {
+				System.out.println("data: " + o.getData());
+				System.out.println("action: " + o.getAction());
+				System.out.println("errors: " + o.getErrorArray());
+
+			}
 		}
 		// https://api.linode.com/?api_key=MY_API_KEY&api_action=batch&api_requestArray=[{"api_action":"test.echo","foo":"bar"},{"api_action":"test.echo","foo":"bar"}]
 

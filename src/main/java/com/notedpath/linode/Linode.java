@@ -178,8 +178,7 @@ public class Linode {
 		return execute(b.toString());
 	}
 
-	public List<LinodeResponse> batchExecute(List<LinodeRequest> requests) throws IOException, HttpException,
-			JSONException {
+	public Object batchExecute(List<LinodeRequest> requests) throws IOException, HttpException, JSONException {
 		StringBuilder b = generateURL("batch");
 		JSONArray params = new JSONArray();
 		for (LinodeRequest req : requests) {
@@ -206,16 +205,24 @@ public class Linode {
 			throw new HttpException("Non-200 HTTP Status code returned: " + rcode);
 		}
 
+		String response = get.getResponseBodyAsString();
+
 		if (debug) {
 			System.out.println("End point: " + url);
-			System.out.println(get.getResponseBodyAsString());
+			System.out.println(response);
 		}
-		JSONArray res = new JSONArray(get.getResponseBodyAsString());
-		List<LinodeResponse> responses = new ArrayList<LinodeResponse>();
-		for (int x = 0; x < res.length(); x++) {
-			responses.add(new LinodeResponse(res.getJSONObject(x)));
+
+		if (response.charAt(0) == '[') {
+			JSONArray res = new JSONArray(response);
+			List<LinodeResponse> responses = new ArrayList<LinodeResponse>();
+			for (int x = 0; x < res.length(); x++) {
+				responses.add(new LinodeResponse(res.getJSONObject(x)));
+			}
+			return responses;
 		}
-		return responses;
+		LinodeResponse res = new LinodeResponse(new JSONObject(response));
+		return res;
+
 	}
 
 	/**
@@ -234,11 +241,13 @@ public class Linode {
 		if (rcode != HttpStatus.SC_OK) {
 			throw new HttpException("Non-200 HTTP Status code returned: " + rcode);
 		}
+
+		String response = get.getResponseBodyAsString();
 		if (debug) {
 			System.out.println("End point: " + url);
-			System.out.println(get.getResponseBodyAsString());
+			System.out.println(response);
 		}
-		JSONObject o = new JSONObject(get.getResponseBodyAsString());
+		JSONObject o = new JSONObject(response);
 		return new LinodeResponse(o);
 	}
 
