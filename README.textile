@@ -15,4 +15,4 @@ For anything simple enough, please github message both maintainers: Theodore Ngu
 
 h2. Documentation
 
-See JavaDocs
+See "JavaDocs":http://notedpath.com/projects/linode-api/javadocs/
