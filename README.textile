@@ -2,7 +2,17 @@ h1. "Linode API (Java)":http://github.com/theo/linode-api
 
 Linode API client written in Java
 
-***************************************************************************
+
+h2. Build
+
+The project can be built using Maven2 ("http://maven.apache.org/":http://maven.apache.org/).
+Execute:
+mvn clean package
+
+h2. Documentation
+
+See "JavaDocs":http://notedpath.com/projects/linode-api/javadocs/
+Alternatively, run mvn javadoc:javadoc
 
 h2. Issue Tracker
 
@@ -11,8 +21,6 @@ Please submit any bugs or annoyances on the lighthouse tracker at
 
 For anything simple enough, please github message both maintainers: Theodore Nguyen-Cao (http://github.com/theo)
 
-***************************************************************************
+h2. License
 
-h2. Documentation
-
-See "JavaDocs":http://notedpath.com/projects/linode-api/javadocs/
+See LICENSE.

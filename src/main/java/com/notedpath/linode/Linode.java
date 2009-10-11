@@ -178,6 +178,18 @@ public class Linode {
 		return execute(b.toString());
 	}
 
+	/**
+	 * Batch API requests. Returns a JSONArray if the call was successful.
+	 * Returns a JSONObject if there was an error with invoking the batch
+	 * request.
+	 * 
+	 * @param requests
+	 *            array of LinodeRequest
+	 * @return response (JSONArray or JSONObject)
+	 * @throws IOException
+	 * @throws HttpException
+	 * @throws JSONException
+	 */
 	public Object batchExecute(List<LinodeRequest> requests) throws IOException, HttpException, JSONException {
 		StringBuilder b = generateURL("batch");
 		JSONArray params = new JSONArray();
@@ -262,6 +274,13 @@ public class Linode {
 		return generateURL(action.getActionName());
 	}
 
+	/**
+	 * Generates the URL to hit based on the specified action name
+	 * 
+	 * @param action
+	 *            API action name
+	 * @return StringBuilder of URL
+	 */
 	private StringBuilder generateURL(String action) {
 		StringBuilder b = new StringBuilder(this.apiEndPoint);
 		if (this.apiKey != null) {
@@ -293,6 +312,13 @@ public class Linode {
 		return b;
 	}
 
+	/**
+	 * URL encode as UTF-8
+	 * 
+	 * @param s
+	 *            string to encode
+	 * @return encoded string
+	 */
 	private String encode(String s) {
 		String str = s;
 		try {

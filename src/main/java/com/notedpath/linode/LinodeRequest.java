@@ -1,13 +1,32 @@
 package com.notedpath.linode;
 
+/**
+ * Linode API request
+ * 
+ * @author theodore nguyen-cao
+ * 
+ */
 public class LinodeRequest {
+	/**
+	 * API_ACTION action to invoke
+	 */
 	private API_ACTION action;
+
+	/**
+	 * Array of parameters (key,value,key,value,...)
+	 */
 	private String[] parameters;
 
 	public LinodeRequest() {
 
 	}
 
+	/**
+	 * Parameterized constructor
+	 * 
+	 * @param action
+	 * @param parameters
+	 */
 	public LinodeRequest(API_ACTION action, String... parameters) {
 		this.action = action;
 		this.parameters = parameters;
