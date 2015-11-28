@@ -208,14 +208,11 @@ public class Linode {
 			}
 			params.put(o);
 		}
-
-		//b = addQueryParameters(b, "api_requestArray", params.toString());
 		
 		String url = b.toString();
 		PostMethod post = new PostMethod(url);
 		NameValuePair[] nvp = new NameValuePair[]{new NameValuePair("api_requestArray", params.toString())};
 		post.setRequestBody(nvp);
-		//GetMethod get = new GetMethod(url);
 		int rcode = client.executeMethod(post);
 		if (rcode != HttpStatus.SC_OK) {
 			throw new HttpException("Non-200 HTTP Status code returned: " + rcode);
