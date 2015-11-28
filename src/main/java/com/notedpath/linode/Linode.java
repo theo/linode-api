@@ -8,7 +8,9 @@ import java.util.List;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -206,18 +208,17 @@ public class Linode {
 			}
 			params.put(o);
 		}
-
-		b = addQueryParameters(b, "api_requestArray", params.toString());
-
+		
 		String url = b.toString();
-
-		GetMethod get = new GetMethod(url);
-		int rcode = client.executeMethod(get);
+		PostMethod post = new PostMethod(url);
+		NameValuePair[] nvp = new NameValuePair[]{new NameValuePair("api_requestArray", params.toString())};
+		post.setRequestBody(nvp);
+		int rcode = client.executeMethod(post);
 		if (rcode != HttpStatus.SC_OK) {
 			throw new HttpException("Non-200 HTTP Status code returned: " + rcode);
 		}
 
-		String response = get.getResponseBodyAsString();
+		String response = post.getResponseBodyAsString();
 
 		if (debug) {
 			System.out.println("End point: " + url);
